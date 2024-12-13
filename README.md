@@ -1,1 +1,1 @@
-# validated-patterns
+# Kubernetes Patterns
