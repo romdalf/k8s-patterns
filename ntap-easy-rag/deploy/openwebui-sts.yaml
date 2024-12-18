@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ntap-easy-rag-webui
+  namespace: ntap-easy-rag
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: ntap-easy-rag
+  template:
+    metadata:
+      labels:
+        name: ntap-easy-rag
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: webui
+          image: ghcr.io/open-webui/open-webui:main
+          volumeMounts:
+          - mountPath: /app/backend/data
+            name: webui-storage
+          env:
+            - name: OLLAMA_BASE_URLS
+              value: "http://ollama"
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          volumeMounts:
+          - name: ntap-easy-rag-webui
+            mountPath: /opt/webui
+          - name: ntap-easy-rag-webui-data
+            mountPath: /app/backend/data
+  volumeClaimTemplates:
+    - metadata:
+        name: ntap-easy-rag-webui
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: "trident-san"
+        resources:
+          requests:
+            storage: 10Gi
+    - metadata:
+        name: ntap-easy-rag-webui-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: "trident-nas"
+        resources:
+          requests:
+            storage: 10Gi

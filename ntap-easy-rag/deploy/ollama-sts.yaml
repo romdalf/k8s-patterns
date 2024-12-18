@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ntap-easy-rag-ollama
+  namespace: ntap-easy-rag
+spec:
+  selector:
+    matchLabels:
+      name: ntap-easy-rag
+  template:
+    metadata:
+      labels:
+        name: ntap-easy-rag
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: ollama
+        image: ollama/ollama:latest
+        env:
+        - name: PRELOAD_MODELS
+          value: "granite-code:3b"
+        - name: OLLAMA_KEEP_ALIVE
+          value: "12h"
+        ports:
+        - name: http
+          containerPort: 11434
+          protocol: TCP
+        volumeMounts:
+        - name: ntap-easy-rag-ollama
+          mountPath: /root/.ollama
+  volumeClaimTemplates:
+    - metadata:
+        name: ntap-easy-rag-ollama
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: "trident-nas"
+        resources:
+          requests:
+            storage: 10Gi
