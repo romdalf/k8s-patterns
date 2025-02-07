@@ -1,0 +1,14 @@
+---
+# Source: milvus/charts/minio/templates/pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vectordb-milvus
+spec:
+  storageClassName: trident-fsx-nas
+  volumeMode: Filesystem
+  accessModes:
+    - "ReadWriteOnce"
+  resources:
+    requests:
+      storage: "50Gi"

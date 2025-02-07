@@ -1,0 +1,93 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vectordb-milvus-standalone
+  namespace: chat-with-docs
+  labels:
+    helm.sh/chart: milvus-4.2.12
+    app.kubernetes.io/name: milvus
+    app.kubernetes.io/instance: vectordb
+    app.kubernetes.io/version: "2.4.12"
+    app.kubernetes.io/managed-by: Helm
+    component: "standalone"
+  annotations:
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: milvus
+      app.kubernetes.io/instance: vectordb
+      component: "standalone"
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: milvus
+        app.kubernetes.io/instance: vectordb
+        component: "standalone"
+      annotations:
+        checksum/config: aa69f3122e92576d66f47b6e6932d557dfd9b6bb07900c64116d26897526ad73
+    spec:
+      serviceAccountName: default
+      initContainers:
+      containers:
+        - name: standalone
+          image: "milvusdb/milvus:v2.4.12"
+          imagePullPolicy: IfNotPresent
+          args: ["milvus", "run", "standalone"]
+          ports:
+            - name: milvus
+              containerPort: 19530
+              protocol: TCP
+            - name: metrics
+              containerPort: 9091
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: metrics
+            initialDelaySeconds: 90
+            periodSeconds: 30
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: metrics
+            initialDelaySeconds: 90
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 5
+          resources: {}
+          env:
+          volumeMounts:
+            - mountPath: /milvus/tools
+              name: tools
+            - name: milvus-config
+              mountPath: /milvus/configs/default.yaml
+              subPath: default.yaml
+              readOnly: true
+            - name: milvus-config
+              mountPath: /milvus/configs/user.yaml
+              subPath: user.yaml
+              readOnly: true
+            - name: milvus-data-disk
+              mountPath: "/var/lib/milvus"
+              subPath:
+            - mountPath: /var/lib/milvus/data
+              name: disk
+      volumes:
+        - emptyDir: {}
+          name: tools
+        - name: milvus-config
+          configMap:
+            name: vectordb-milvus
+        - name: milvus-data-disk
+          persistentVolumeClaim:
+            claimName: vectordb-milvus
+        - name: disk
+          emptyDir: {}
