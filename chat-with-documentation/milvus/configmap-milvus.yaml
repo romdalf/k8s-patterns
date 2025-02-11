@@ -13,6 +13,7 @@ data:
     metastore:
       type: etcd
 
+    # Modify this section to configure the NetApp S3 object store
     minio:
       address: 10.0.0.154
       port: 80
