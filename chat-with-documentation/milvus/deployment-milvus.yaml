@@ -5,11 +5,9 @@ metadata:
   name: vectordb-milvus-standalone
   namespace: chat-with-docs
   labels:
-    helm.sh/chart: milvus-4.2.12
     app.kubernetes.io/name: milvus
     app.kubernetes.io/instance: vectordb
     app.kubernetes.io/version: "2.4.12"
-    app.kubernetes.io/managed-by: Helm
     component: "standalone"
   annotations:
 spec:

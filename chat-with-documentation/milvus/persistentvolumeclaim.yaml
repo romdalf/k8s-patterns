@@ -1,9 +1,12 @@
 ---
-# Source: milvus/charts/minio/templates/pvc.yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: vectordb-milvus
+  namespace: chat-with-docs
+  labels:
+    app.kubernetes.io/name: milvus
+    app.kubernetes.io/instance: vectordb
 spec:
   storageClassName: trident-fsx-nas
   volumeMode: Filesystem

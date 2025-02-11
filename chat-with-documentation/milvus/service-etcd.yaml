@@ -6,9 +6,7 @@ metadata:
   namespace: chat-with-docs
   labels:
     app.kubernetes.io/name: etcd
-    helm.sh/chart: etcd-6.3.3
     app.kubernetes.io/instance: vectordb
-    app.kubernetes.io/managed-by: Helm
   annotations:
 spec:
   type: ClusterIP
